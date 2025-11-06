@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
 import Typed from 'typed.js'
+import appConfig from '../config/appConfig'
 
 const name = 'Wiam Muhammed'
 
@@ -29,12 +30,7 @@ onBeforeUnmount(() => {
   }
 })
 
-const socialLinks = [
-  { link: '#', icon: 'bi bi-twitter-x' },
-  { link: '#', icon: 'bi bi-facebook' },
-  { link: '#', icon: 'bi bi-instagram' },
-  { link: '#', icon: 'bi bi-linkedin' },
-]
+const socialLinks = appConfig.socials;
 </script>
 
 <template>
@@ -54,7 +50,7 @@ const socialLinks = [
         <a 
           v-for="link in socialLinks" 
           :key="link.icon" 
-          :href="link.link" 
+          :href="link.url"
           target="_blank"
         >
           <i :class="link.icon"></i>

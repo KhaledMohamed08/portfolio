@@ -1,5 +1,7 @@
 <script setup>
-const siteName = 'Personal'
+import appConfig from '../config/appConfig';
+
+const siteName = appConfig.siteName;
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },

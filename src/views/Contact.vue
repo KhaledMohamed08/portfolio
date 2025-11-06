@@ -1,26 +1,27 @@
 <script setup>
+import appConfig from "../config/appConfig";
 import PageTitle from "../components/PageTitle.vue";
 
 const contactInfo = [
   {
     icon: "bi bi-telephone flex-shrink-0",
     title: "Call Me",
-    text: "+1 5589 55488 55",
-    link: "tel:+155895548855",
+    text: appConfig.contacts.phone,
+    link: `tel:+2${appConfig.contacts.phone}`,
     delay: 200,
   },
   {
     icon: "bi bi-whatsapp flex-shrink-0",
     title: "Whatsapp",
-    text: "+1 5589 55488 55",
-    link: "https://wa.me/155895548855",
+    text: appConfig.contacts.whatsapp,
+    link: `https://wa.me/${appConfig.contacts.whatsapp}`,
     delay: 300,
   },
   {
     icon: "bi bi-envelope flex-shrink-0",
     title: "Email Us",
-    text: "info@example.com",
-    link: "mailto:info@example.com",
+    text: appConfig.contacts.email,
+    link: `mailto:${appConfig.contacts.email}`,
     delay: 400,
   },
   {
@@ -31,12 +32,7 @@ const contactInfo = [
   },
 ];
 
-const socialLinks = [
-  { icon: "bi bi-twitter-x", link: "#" },
-  // { icon: "bi bi-facebook", link: "#" },
-  // { icon: "bi bi-instagram", link: "#" },
-  { icon: "bi bi-linkedin", link: "#" },
-];
+const socialLinks = appConfig.socials;
 </script>
 
 <template>
@@ -78,7 +74,7 @@ const socialLinks = [
                 <a
                   v-for="social in socialLinks"
                   :key="social.icon"
-                  :href="social.link"
+                  :href="social.url"
                   target="_blank"
                 >
                   <i :class="social.icon"></i>

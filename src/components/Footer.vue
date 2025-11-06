@@ -1,14 +1,10 @@
 <script setup>
-const siteName = 'Personal'
-const footerMessage = 'Thank you for visiting!'
-const currentYear = new Date().getFullYear()
+import appConfig from '../config/appConfig';
 
-const socialLinks = [
-  { link: '#', icon: 'bi bi-twitter-x' },
-  { link: '#', icon: 'bi bi-facebook' },
-  { link: '#', icon: 'bi bi-instagram' },
-  { link: '#', icon: 'bi bi-linkedin' },
-]
+const siteName = appConfig.siteName;
+const footerMessage = 'Thank you for visiting!';
+const currentYear = new Date().getFullYear();
+const socialLinks = appConfig.socials;
 </script>
 
 <template>
@@ -23,7 +19,7 @@ const socialLinks = [
         <a
           v-for="link in socialLinks"
           :key="link.icon"
-          :href="link.link"
+          :href="link.url"
           target="_blank"
         >
           <i :class="link.icon"></i>
