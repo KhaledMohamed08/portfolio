@@ -55,12 +55,12 @@ function clearBackgroundInert() {
 function getYoutubeThumbnail(url) {
   const idMatch = url.match(/v=([a-zA-Z0-9_-]+)/);
   if (idMatch) return `https://img.youtube.com/vi/${idMatch[1]}/hqdefault.jpg`;
-  return "/data/images/video.png";
+  return "/portfolio/data/images/video.png";
 }
 
 onMounted(async () => {
   try {
-    const response = await fetch("/json/portfolio.json");
+    const response = await fetch("/portfolio/json/portfolio.json");
     const data = await response.json();
 
     portfolioItems.value = data.map((item, index) => ({
@@ -70,7 +70,7 @@ onMounted(async () => {
       thumbnail:
         item.type === "video"
           ? getYoutubeThumbnail(item.url)
-          : item.thumbnail || "/data/images/pdf.png",
+          : item.thumbnail || "/portfolio/data/images/pdf.png",
     }));
 
     const types = [...new Set(data.map((item) => item.type))];
