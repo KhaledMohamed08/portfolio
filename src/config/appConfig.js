@@ -2,6 +2,9 @@ export default {
   siteName: "WM",
   siteLogo: "",
 
+  userName: "Wiam Muhammed",
+  userTitle: "Translator & Language Specialist",
+
   contacts: {
     phone: "+201093833112",
     whatsapp: "+201093833112",
@@ -10,12 +13,12 @@ export default {
 
   socials: {
     linkedin: {
-      url: "#",
+      url: "https://www.linkedin.com/in/wiam-m-171665217/",
       icon: "bi bi-linkedin",
     },
-    facebook: {
+    x: {
       url: "#",
-      icon: "bi bi-facebook",
+      icon: "bi bi-twitter-x",
     },
   },
 };

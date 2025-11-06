@@ -3,11 +3,11 @@ import { onMounted, onBeforeUnmount } from 'vue'
 import Typed from 'typed.js'
 import appConfig from '../config/appConfig'
 
-const name = 'Wiam Muhammed'
+const name = appConfig.userName
 
 let typedInstance = null
 
-const titles = ['Designer', 'Developer', 'Freelancer', 'Photographer']
+const titles = ['Translator', 'Subtitler', 'Proofreader', 'Localization Specialist']
 
 onMounted(() => {
   const el = document.querySelector('.typed')

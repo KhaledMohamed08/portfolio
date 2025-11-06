@@ -766,6 +766,24 @@ section,
 /*--------------------------------------------------------------
 # About Section
 --------------------------------------------------------------*/
+.btn-download-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-color);
+  color: var(--contrast-color);
+  padding: 10px 18px;
+  border-radius: 50px;
+  font-weight: 500;
+  transition: 0.3s;
+  cursor: pointer;
+}
+.btn-download-cv:hover {
+  background: color-mix(in srgb, var(--accent-color), transparent 20%);
+  color: var(--contrast-color);
+  text-decoration: none;
+}
+
 .about .content h2 {
   font-weight: 700;
   font-size: 24px;
