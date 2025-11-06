@@ -3,8 +3,8 @@ export default {
   siteLogo: "",
 
   contacts: {
-    phone: "01093833112",
-    whatsapp: "01066006223",
+    phone: "+201093833112",
+    whatsapp: "+201066006223",
     email: "admin@email.com",
   },
 
