@@ -2,7 +2,7 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 import Typed from 'typed.js'
 
-const name = 'Weam Mustafa'
+const name = 'Wiam Muhammed'
 
 let typedInstance = null
 

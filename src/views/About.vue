@@ -1,5 +1,4 @@
 <script setup>
-import profileImg from "../assets/images/profile-img.jpg";
 import PageTitle from "../components/PageTitle.vue";
 
 const title = "UI/UX Designer & Web Developer.";
@@ -30,10 +29,6 @@ const personalInfoRight = [
   <section id="about" class="about section">
     <div class="container" data-aos="fade-up" data-aos-delay="100">
       <div class="row gy-4 justify-content-center">
-        <div class="col-lg-4">
-          <img :src="profileImg" class="img-fluid" alt="Profile Image" />
-        </div>
-
         <div class="col-lg-8 content">
           <h2 class="py-3">{{ title }}</h2>
 
