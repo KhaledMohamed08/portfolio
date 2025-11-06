@@ -39,8 +39,7 @@ const socialLinks = [
 
 <template>
   <section id="hero" class="hero section dark-background">
-    <img src="../assets/images/hero-bg.jpg" alt="" data-aos="fade-in" />
-    <img src="../assets/images/hero.jpg" alt="" data-aos="fade-in" />
+\    <img src="../assets/images/hero.jpg" alt="" data-aos="fade-in" />
 
     <div class="container" data-aos="zoom-out" data-aos-delay="100">
       <h2>{{ name }}</h2>
