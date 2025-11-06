@@ -7,7 +7,7 @@ const contactInfo = [
     icon: "bi bi-telephone flex-shrink-0",
     title: "Call Me",
     text: appConfig.contacts.phone,
-    link: `tel:+2${appConfig.contacts.phone}`,
+    link: `tel:${appConfig.contacts.phone}`,
     delay: 200,
   },
   {
