@@ -4,7 +4,7 @@ export default {
 
   contacts: {
     phone: "+201093833112",
-    whatsapp: "+201066006223",
+    whatsapp: "+201093833112",
     email: "admin@email.com",
   },
 
