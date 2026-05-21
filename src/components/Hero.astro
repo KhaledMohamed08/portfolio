@@ -6,20 +6,20 @@ import Icon from "./Icon.astro";
 
 <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden term-grid-bg">
   <canvas id="matrix-canvas"></canvas>
-  <div class="relative z-10 w-full max-w-4xl mx-auto px-4">
+  <div class="relative z-10 w-full max-w-4xl xl:max-w-5xl mx-auto px-4">
     <div class="terminal-window rounded-sm">
-      <div class="terminal-titlebar text-xs text-term-fg-muted flex items-center justify-between">
+      <div class="terminal-titlebar text-xs sm:text-[13px] text-term-fg-muted flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="terminal-titlebar-dot red"></span>
           <span class="terminal-titlebar-dot yellow"></span>
           <span class="terminal-titlebar-dot green"></span>
         </div>
-        <span class="text-[11px]">{SITE.name.toLowerCase()}@portfolio:~$</span>
+        <span class="text-[11px] sm:text-xs">{SITE.name.toLowerCase()}@portfolio:~$</span>
         <span class="w-14"></span>
       </div>
 
-      <div class="p-6 sm:p-10">
-        <div class="text-xs text-term-fg-muted mb-4">
+      <div class="p-6 sm:p-10 lg:p-12">
+        <div class="text-xs sm:text-[13px] text-term-fg-muted mb-4">
           <span class="text-term-green">┌──(</span>
           <span class="text-term-yellow">SYSTEM: ONLINE</span>
           <span class="text-term-green">)</span>
@@ -27,11 +27,11 @@ import Icon from "./Icon.astro";
         </div>
 
         <div class="mb-2">
-          <span class="text-sm text-term-fg-muted">$ </span>
-          <span class="text-sm text-term-green">whoami</span>
+          <span class="text-sm sm:text-base text-term-fg-muted">$ </span>
+          <span class="text-sm sm:text-base text-term-green">whoami</span>
         </div>
 
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight" style="font-family: var(--font-mono);">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight" style="font-family: var(--font-mono);">
           <span class="text-term-fg">Hi, I'm</span>
           <span class="text-term-green">&nbsp;</span>
           <span class="text-term-green" id="typewriter-name" data-text={SITE.name}>{SITE.name}</span>
@@ -40,43 +40,43 @@ import Icon from "./Icon.astro";
         </h1>
 
         <div class="mb-2 mt-6">
-          <span class="text-sm text-term-fg-muted">$ </span>
-          <span class="text-sm text-term-green">cat about.md</span>
+          <span class="text-sm sm:text-base text-term-fg-muted">$ </span>
+          <span class="text-sm sm:text-base text-term-green">cat about.md</span>
         </div>
 
         <div class="border-l-2 border-term-green pl-4 mb-8" id="about-text" style="opacity: 0;">
-          <p class="text-sm text-term-fg-muted leading-relaxed">
+          <p class="text-sm sm:text-base text-term-fg-muted leading-relaxed">
             I build performant, scalable full-stack applications with modern technologies.
           </p>
-          <p class="text-sm text-term-fg-muted leading-relaxed">
+          <p class="text-sm sm:text-base text-term-fg-muted leading-relaxed">
             Passionate about clean code, system design, and developer experience.
           </p>
         </div>
 
         <div class="mb-2" id="action-prompt" style="opacity: 0;">
-          <span class="text-sm text-term-fg-muted">$ </span>
-          <span class="text-sm text-term-green">./run --action</span>
+          <span class="text-sm sm:text-base text-term-fg-muted">$ </span>
+          <span class="text-sm sm:text-base text-term-green">./run --action</span>
         </div>
 
         <div class="flex flex-col sm:flex-row items-start gap-3 ml-4" id="action-buttons" style="opacity: 0;">
-          <a href="#projects" class="term-btn-primary term-btn text-xs glitch">
+          <a href="#projects" class="term-btn-primary term-btn text-xs sm:text-sm glitch">
             <span class="text-term-green">▶</span> View My Work
           </a>
-          <a href="#contact" class="term-btn text-xs glitch">
+          <a href="#contact" class="term-btn text-xs sm:text-sm glitch">
             <span class="text-term-blue">◇</span> Get In Touch
           </a>
         </div>
 
         <div class="mt-10 pt-4 border-t border-term-border" id="social-section" style="opacity: 0;">
-          <div class="text-xs text-term-fg-muted mb-3">
+          <div class="text-xs sm:text-[13px] text-term-fg-muted mb-3">
             <span class="text-term-green">└─</span> <span class="text-term-yellow">$SOCIAL</span>
           </div>
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-4 flex-wrap">
             {SOCIAL_LINKS.map((link) => (
               <a
                 href={link.url}
                 target={link.platform === "email" ? undefined : "_blank"}
-                class="text-term-fg-muted hover:text-term-green transition-colors text-xs flex items-center gap-1.5"
+                class="text-term-fg-muted hover:text-term-green transition-colors text-xs sm:text-[13px] flex items-center gap-1.5"
                 aria-label={link.ariaLabel}
               >
                 <Icon name={link.platform} size={16} />
