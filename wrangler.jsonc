@@ -1,0 +1,10 @@
+{
+  "name": "portfolio",
+  "compatibility_date": "2024-12-01",
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "ec832bee3a974a9894da4659a5a6b0a9"
+    }
+  ]
+}

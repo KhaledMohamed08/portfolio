@@ -1,9 +1,9 @@
-export async function onRequest(context) {
-  const { request, env } = context;
+import type { APIRoute } from "astro";
 
-  if (request.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
-  }
+export const prerender = false;
+
+export const POST: APIRoute = async ({ request, locals }) => {
+  const env = (locals as any).runtime?.env;
 
   try {
     const text = await request.text();
@@ -15,15 +15,15 @@ export async function onRequest(context) {
     const message = params.get("message")?.trim();
 
     if (!name || !email || !subject || !message) {
-      return Response.json({ error: "All fields are required" }, { status: 400 });
+      return new Response(JSON.stringify({ error: "All fields are required" }), { status: 400 });
     }
 
-    const apiKey = env.RESEND_API_KEY;
+    const apiKey = env?.RESEND_API_KEY;
     if (!apiKey) {
-      return Response.json({ error: "Server not configured for email" }, { status: 500 });
+      return new Response(JSON.stringify({ error: "Server not configured for email" }), { status: 500 });
     }
 
-    const to = env.CONTACT_EMAIL || "hello@khaledmohamed.com";
+    const to = env?.CONTACT_EMAIL || "hello@khaledmohamed.com";
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -43,12 +43,12 @@ export async function onRequest(context) {
     if (!res.ok) {
       const err = await res.text();
       console.error("Resend error:", err);
-      return Response.json({ error: "Failed to send email" }, { status: 500 });
+      return new Response(JSON.stringify({ error: "Failed to send email" }), { status: 500 });
     }
 
-    return Response.json({ success: true });
+    return new Response(JSON.stringify({ success: true }));
   } catch (err) {
-    console.error("Contact function error:", err);
-    return Response.json({ error: "Internal server error" }, { status: 500 });
+    console.error("Contact error:", err);
+    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
   }
-}
+};
