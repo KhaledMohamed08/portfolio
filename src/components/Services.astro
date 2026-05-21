@@ -1,0 +1,35 @@
+---
+import { SERVICES } from "../data/services";
+import Section from "./Section.astro";
+import TermDivider from "./TermDivider.astro";
+---
+<TermDivider command="services" />
+
+<Section id="services" title="What I Do" description="Services I offer to help bring your ideas to life.">
+  <div class="grid md:grid-cols-2 gap-4">
+    {SERVICES.map((service) => (
+      <div class="terminal-window rounded-sm group">
+        <div class="px-4 py-2 border-b border-term-border text-xs text-term-green font-semibold flex items-center gap-2" style="background: var(--color-term-bg-card);">
+          <span>{service.icon}</span>
+          <span class="text-term-fg group-hover:text-term-green transition-colors">{service.title}</span>
+        </div>
+        <div class="p-4">
+          <p class="text-xs text-term-fg-muted leading-relaxed mb-4">
+            {service.description}
+          </p>
+          <div class="text-[11px] text-term-fg-muted mb-2">
+            <span class="text-term-purple">$ </span>includes:
+          </div>
+          <ul class="space-y-1">
+            {service.features.map((feature) => (
+              <li class="text-[11px] text-term-fg-muted flex items-start gap-2">
+                <span class="text-term-green mt-0.5">▸</span>
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    ))}
+  </div>
+</Section>

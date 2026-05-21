@@ -1,0 +1,371 @@
+---
+import { SITE } from "../data/site";
+import { SOCIAL_LINKS } from "../data/social";
+import Icon from "./Icon.astro";
+import Section from "./Section.astro";
+---
+
+<Section id="contact" title="Get In Touch" description="Have a project in mind or just want to chat? Drop me a line." maxWidth="4xl">
+  <div class="max-w-2xl mx-auto">
+    <div class="terminal-window rounded-sm">
+      <div class="terminal-titlebar text-xs text-term-fg-muted flex items-center gap-2">
+        <span class="terminal-titlebar-dot red"></span>
+        <span class="terminal-titlebar-dot yellow"></span>
+        <span class="terminal-titlebar-dot green"></span>
+        <span class="ml-2 text-[11px]">contact — {SITE.email}</span>
+      </div>
+
+      <div id="term-body" class="p-5">
+        <div id="term-output" class="space-y-1.5 mb-3 max-h-80 overflow-y-auto overflow-x-hidden break-words"></div>
+        <div id="term-input-row" class="items-start gap-2 border-t border-term-border pt-3 mt-3 hidden" style="display: none;">
+          <span id="term-prompt" class="text-term-green text-xs mt-1.5 shrink-0">❯</span>
+          <input
+            id="term-input"
+            type="text"
+            autocomplete="off"
+            class="flex-1 min-w-0 bg-transparent border-none outline-none text-xs text-term-fg font-mono p-0 resize-none"
+          />
+          <textarea
+            id="term-textarea"
+            rows="1"
+            class="flex-1 min-w-0 bg-transparent border-none outline-none text-xs text-term-fg font-mono p-0 resize-none overflow-hidden hidden"
+          ></textarea>
+          <span id="term-cursor" class="text-term-green text-xs animate-pulse mt-1.5 shrink-0">▍</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8">
+      <div class="text-xs text-term-fg-muted mb-3">
+        <span class="text-term-green">└─</span> <span class="text-term-yellow">$CONTACTS</span>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        {SOCIAL_LINKS.map((link) => (
+          <a
+            href={link.url}
+            target={link.platform === "email" ? undefined : "_blank"}
+            class="terminal-window rounded-sm p-3 hover:border-term-green/50 transition-colors text-center"
+          >
+            <Icon
+              name={link.platform as "github" | "linkedin" | "email"}
+              size={18}
+              class="mx-auto mb-1.5 text-term-green"
+            />
+            <p class="text-[11px] font-mono text-term-fg-muted">{link.label}</p>
+            <p class="text-[11px] font-mono text-term-fg truncate hover:text-term-green transition-colors">
+              {link.username}
+            </p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</Section>
+
+<script>
+  const output = document.getElementById("term-output");
+  const inputRow = document.getElementById("term-input-row");
+  const input = document.getElementById("term-input");
+  const textarea = document.getElementById("term-textarea");
+  const prompt = document.getElementById("term-prompt");
+  const cursor = document.getElementById("term-cursor");
+
+  const fields = ["name", "email", "phone", "subject", "message"];
+  const labels = { name: "name", email: "email", phone: "phone", subject: "subject", message: "message" };
+  const saved = { name: "", email: "", phone: "", subject: "", message: "" };
+
+  let step = -1;
+  let phase = "intro";
+  let editing = false;
+  let activeInput = input;
+
+  function addLine(text, className = "text-term-fg-muted") {
+    const div = document.createElement("div");
+    div.className = `text-xs font-mono ${className}`;
+    div.textContent = text;
+    output.appendChild(div);
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function switchInput(forField) {
+    const useTextarea = forField === "message";
+    input.classList.toggle("hidden", useTextarea);
+    textarea.classList.toggle("hidden", !useTextarea);
+    activeInput = useTextarea ? textarea : input;
+    if (useTextarea) {
+      textarea.value = "";
+      textarea.rows = 1;
+      textarea.style.height = "auto";
+    } else {
+      input.value = "";
+    }
+    activeInput.disabled = false;
+    activeInput.focus({preventScroll: true});
+  }
+
+  function getActiveValue() {
+    return activeInput.value.trim();
+  }
+
+  function showPrompt() {
+    if (step < fields.length) {
+      const f = fields[step];
+      prompt.textContent = "❯";
+      cursor.classList.remove("hidden");
+      phase = "input";
+      switchInput(f);
+      activeInput.placeholder = labels[f];
+      activeInput.focus({preventScroll: true});
+    }
+  }
+
+  function showSummary() {
+    addLine("", "");
+    addLine("$ summary", "text-term-yellow");
+    fields.forEach((f, i) => {
+      addLine(`  [${i + 1}] ${labels[f]}: ${saved[f] || "(not provided)"}`, "text-term-fg");
+    });
+      addLine("  [0] proceed", "text-term-green");
+      addLine("  [c] cancel", "text-term-red");
+    addLine("");
+
+    phase = "edit";
+    activeInput.value = "";
+    activeInput.placeholder = "edit field [1-5], 0 to proceed, c to cancel";
+    cursor.classList.remove("hidden");
+    activeInput.focus({preventScroll: true});
+  }
+
+  function handleInput(e) {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+
+    if (phase === "input" && step < fields.length) {
+      const f = fields[step];
+      const val = getActiveValue();
+
+      if (val.toLowerCase() === "cancel" || val.toLowerCase() === "c") {
+        activeInput.disabled = true;
+        addLine(`❯ ${labels[f]}: ${val}`, "text-term-fg");
+        addLine("> session cancelled", "text-term-red");
+        addLine("");
+        setTimeout(() => goToIdle(), 400);
+        return;
+      }
+
+      saved[f] = val;
+      addLine(`❯ ${labels[f]}: ${val || "(not provided)"}`, "text-term-fg");
+
+      if (editing) {
+        editing = false;
+        step = fields.length;
+        showSummary();
+        return;
+      }
+
+      step++;
+      if (step < fields.length) {
+        showPrompt();
+      } else {
+        phase = "confirm";
+        prompt.textContent = ">";
+        activeInput.value = "";
+        activeInput.placeholder = "proceed? [Y/n]";
+        cursor.classList.remove("hidden");
+        activeInput.focus({preventScroll: true});
+      }
+      return;
+    }
+
+    if (phase === "confirm") {
+      const val = activeInput.value.trim().toLowerCase();
+      if (val === "" || val === "y" || val === "yes") {
+        phase = "sending";
+        sendMessage();
+      } else {
+        showSummary();
+      }
+      return;
+    }
+
+    if (phase === "again") {
+      const val = activeInput.value.trim().toLowerCase();
+      if (val === "" || val === "y" || val === "yes") {
+        goToIdle();
+      } else {
+        addLine("> goodbye!", "text-term-yellow");
+        addLine("");
+        goToIdle();
+      }
+      return;
+    }
+
+    if (phase === "idle") {
+      const val = activeInput.value.trim().toLowerCase();
+      if (val === "start" || val === "s") {
+        startSession();
+      } else {
+        activeInput.value = "";
+        activeInput.placeholder = "type 'start' (or 's') to begin a new message";
+        activeInput.focus({preventScroll: true});
+      }
+      return;
+    }
+
+    if (phase === "edit") {
+      const val = activeInput.value.trim().toLowerCase();
+      if (val === "c" || val === "cancel") {
+        addLine("> cancelled", "text-term-yellow");
+        addLine("");
+        phase = "idle";
+        prompt.textContent = ">";
+        activeInput.value = "";
+        activeInput.placeholder = "type 'start' (or 's') to begin a new message";
+        cursor.classList.remove("hidden");
+        activeInput.focus({preventScroll: true});
+        return;
+      }
+      const num = parseInt(val, 10);
+      if (num === 0 || val === "") {
+        phase = "confirm";
+        prompt.textContent = ">";
+        activeInput.value = "";
+        activeInput.placeholder = "proceed? [Y/n]";
+        cursor.classList.remove("hidden");
+        activeInput.focus({preventScroll: true});
+        return;
+      }
+      if (num >= 1 && num <= fields.length) {
+        editing = true;
+        step = num - 1;
+        addLine(`> editing field: ${labels[fields[step]]}`, "text-term-cyan");
+        showPrompt();
+      } else {
+        addLine(`> invalid: enter 1-${fields.length}, 0, or c`, "text-term-red");
+        activeInput.value = "";
+        activeInput.placeholder = "edit field [1-5], 0 to proceed, c to cancel";
+        activeInput.focus({preventScroll: true});
+      }
+      return;
+    }
+  }
+
+  function startSession() {
+    Object.keys(saved).forEach((k) => (saved[k] = ""));
+    step = 0;
+    editing = false;
+    addLine("contact: starting session...", "text-term-green");
+    setTimeout(() => {
+      addLine("contact: type 'cancel' or 'c' to cancel at any time", "text-term-red");
+      setTimeout(() => {
+        addLine("contact: please provide your details", "text-term-cyan");
+        setTimeout(() => {
+          addLine("");
+          showPrompt();
+        }, 300);
+      }, 250);
+    }, 250);
+  }
+
+  function goToIdle() {
+    output.innerHTML = "";
+    step = -1;
+    editing = false;
+    inputRow.style.display = "flex";
+
+    addLine("contact: type 'start' to begin", "text-term-cyan");
+    addLine("");
+    phase = "idle";
+    prompt.textContent = ">";
+    activeInput.value = "";
+    activeInput.placeholder = "type 'start' (or 's') to begin a new message";
+    cursor.classList.remove("hidden");
+    activeInput.disabled = false;
+    activeInput.focus({preventScroll: true});
+  }
+
+  async function sendMessage() {
+    prompt.textContent = "";
+    activeInput.value = "";
+    activeInput.placeholder = "";
+    cursor.classList.add("hidden");
+    activeInput.disabled = true;
+    inputRow.style.display = "none";
+
+    addLine("$ Sending message...", "text-term-green");
+
+    const body = new URLSearchParams({
+      name: saved.name,
+      email: saved.email,
+      phone: saved.phone,
+      subject: saved.subject,
+      message: saved.message,
+    });
+
+    try {
+      const res = await fetch("/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body,
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "server error");
+      }
+    } catch (err) {
+      addLine(`$ Failed to send: ${err.message}`, "text-term-red");
+      addLine("");
+      phase = "again";
+      inputRow.style.display = "flex";
+      activeInput.disabled = false;
+      prompt.textContent = ">";
+      activeInput.value = "";
+      activeInput.placeholder = "send another? [Y/n]";
+      cursor.classList.remove("hidden");
+      activeInput.focus({preventScroll: true});
+      return;
+    }
+
+    addLine("$ Message sent successfully! ✓", "text-term-green");
+    addLine("");
+    addLine("$ I'll get back to you soon.", "text-term-cyan");
+    addLine("");
+    addLine("$ Thank you for reaching out! ", "text-term-green");
+    addLine("");
+
+    phase = "again";
+    inputRow.style.display = "flex";
+    activeInput.disabled = false;
+    prompt.textContent = ">";
+    activeInput.value = "";
+    activeInput.placeholder = "send another? [Y/n]";
+    cursor.classList.remove("hidden");
+    activeInput.focus({preventScroll: true});
+  }
+
+  textarea.addEventListener("input", () => {
+    textarea.style.height = "auto";
+    textarea.style.height = textarea.scrollHeight + "px";
+    output.scrollTop = output.scrollHeight;
+  });
+
+  textarea.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      handleInput(e);
+    }
+  });
+
+  input.addEventListener("keydown", handleInput);
+
+  setTimeout(() => {
+    addLine("contact: type 'start' to begin", "text-term-cyan");
+    addLine("");
+    inputRow.style.display = "flex";
+    phase = "idle";
+    prompt.textContent = ">";
+    activeInput.placeholder = "type 'start' (or 's') to begin a new message";
+    cursor.classList.remove("hidden");
+    activeInput.disabled = false;
+    activeInput.focus({preventScroll: true});
+  }, 250);
+</script>

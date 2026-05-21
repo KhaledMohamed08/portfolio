@@ -1,4 +1,6 @@
 ---
+import Footer from "../components/Footer.astro";
+import GoToTop from "../components/GoToTop.astro";
 import "../styles/global.css";
 
 export interface Props {
@@ -64,6 +66,9 @@ const { title = "Software Engineer Portfolio", description = "Full-stack softwar
     </div>
 
     <slot />
+
+    <GoToTop />
+    <Footer />
 
     <script>
       // ── Boot sequence ──────────────────────────────────────────────

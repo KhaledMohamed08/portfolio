@@ -1,0 +1,32 @@
+---
+import { SKILLS, CATEGORY_ICONS } from "../data/skills";
+import Section from "./Section.astro";
+import TermDivider from "./TermDivider.astro";
+
+const entries = Object.entries(SKILLS);
+---
+<TermDivider command="skills" />
+
+
+<Section id="skills" title="Technologies" description="Tools and languages I use to build production-grade software.">
+  <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {entries.map(([category, skills]) => (
+      <div class="terminal-window rounded-sm">
+        <div class="px-4 py-2 border-b border-term-border text-xs text-term-green font-semibold flex items-center gap-2" style="background: var(--color-term-bg-card);">
+          <span>{CATEGORY_ICONS[category]}</span>
+          <span>{category}</span>
+          <span class="text-term-fg-muted font-normal">({skills.length})</span>
+        </div>
+        <div class="p-3">
+          <div class="flex flex-wrap gap-1.5">
+            {skills.map((skill) => (
+              <span class="px-2.5 py-1 text-[11px] border border-term-border text-term-fg-muted hover:text-term-green hover:border-term-green transition-colors cursor-default" style="background: var(--color-term-bg);">
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</Section>

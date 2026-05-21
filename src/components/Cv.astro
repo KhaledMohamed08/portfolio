@@ -1,0 +1,256 @@
+---
+import { CV, cvToMarkdown } from "../data/cv";
+import { marked } from "marked";
+import Section from "./Section.astro";
+import TermDivider from "./TermDivider.astro";
+
+const cvMarkdown = cvToMarkdown(CV);
+const cvHtml = marked.parse(cvMarkdown);
+---
+<TermDivider command="cv" />
+
+<Section id="cv" title="Curriculum Vitae" description="My professional background and experience.">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex items-center justify-end gap-2 mb-2 text-xs">
+      <button id="cv-toggle-cat" class="term-btn text-xs cv-toggle active" data-mode="cat">
+        <span class="text-term-green">$</span> cat cv.md
+      </button>
+      <button id="cv-toggle-styled" class="term-btn text-xs cv-toggle" data-mode="styled">
+        <span class="text-term-blue">◇</span> MD Formatted
+      </button>
+      <span class="text-term-border">|</span>
+      <a
+        href={CV.pdfPath}
+        target="_blank"
+        download
+        class="term-btn-primary term-btn text-xs"
+      >
+        <span class="text-term-green">↓</span> Download PDF Version
+      </a>
+    </div>
+
+    <div class="terminal-window rounded-sm">
+      <div class="terminal-titlebar text-xs text-term-fg-muted flex items-center gap-2">
+        <span class="terminal-titlebar-dot red"></span>
+        <span class="terminal-titlebar-dot yellow"></span>
+        <span class="terminal-titlebar-dot green"></span>
+        <span class="ml-2 text-[11px]">cv.md — {CV.name}</span>
+      </div>
+
+      <div id="cv-body" class="p-5 max-h-96 overflow-y-auto">
+        <div id="cv-cat">
+          <div class="text-xs text-term-fg-muted mb-3">
+            <span class="text-term-green">$</span> cat cv.md
+          </div>
+          <pre class="text-xs text-term-fg leading-relaxed whitespace-pre-wrap font-mono" style="background: none; border: none; padding: 0; margin: 0;"><code>{cvMarkdown}</code></pre>
+        </div>
+
+        <div id="cv-styled" class="hidden">
+          <div class="text-xs text-term-fg-muted mb-2">
+            <span class="text-term-green">$</span> cat cv.md | render
+          </div>
+          <div class="cv-markdown text-xs text-term-fg leading-relaxed" set:html={cvHtml} />
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<script>
+  const catBtn = document.getElementById("cv-toggle-cat");
+  const styledBtn = document.getElementById("cv-toggle-styled");
+  const catView = document.getElementById("cv-cat");
+  const styledView = document.getElementById("cv-styled");
+
+  function setMode(mode) {
+    catBtn.classList.toggle("active", mode === "cat");
+    styledBtn.classList.toggle("active", mode === "styled");
+    catView.classList.toggle("hidden", mode === "styled");
+    styledView.classList.toggle("hidden", mode === "cat");
+  }
+
+  catBtn.addEventListener("click", () => setMode("cat"));
+  styledBtn.addEventListener("click", () => setMode("styled"));
+</script>
+
+<style>
+  .cv-toggle.active {
+    border-color: var(--color-term-green);
+    background: rgba(63, 185, 80, 0.1);
+    color: var(--color-term-green);
+  }
+
+  .cv-markdown {
+    font-size: 0.75rem;
+    line-height: 1.8;
+    color: var(--color-term-fg-muted);
+  }
+
+  .cv-markdown h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--color-term-fg);
+    margin: 0 0 0.15rem 0;
+    padding-bottom: 0.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .cv-markdown h1 + p strong {
+    font-size: 0.85rem;
+    color: var(--color-term-cyan);
+  }
+
+  .cv-markdown h2 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-term-yellow);
+    margin: 1.5rem 0 0.5rem 0;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--color-term-border);
+  }
+
+  .cv-markdown h3 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-term-green);
+    margin: 1rem 0 0.15rem 0;
+  }
+
+  .cv-markdown h3 + p em {
+    font-size: 0.68rem;
+    color: var(--color-term-fg-muted);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .cv-markdown p {
+    color: var(--color-term-fg-muted);
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
+  }
+
+  .cv-markdown strong {
+    color: var(--color-term-fg);
+    font-weight: 600;
+  }
+
+  .cv-markdown em {
+    font-style: italic;
+    color: var(--color-term-fg-muted);
+  }
+
+  .cv-markdown hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-term-border), transparent);
+    margin: 1rem 0;
+  }
+
+  .cv-markdown ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0.25rem 0 0.75rem 0;
+  }
+
+  .cv-markdown li {
+    color: var(--color-term-fg-muted);
+    font-size: 0.7rem;
+    line-height: 1.7;
+    padding: 0.15rem 0 0.15rem 1.2rem;
+    position: relative;
+  }
+
+  .cv-markdown li::before {
+    content: "";
+    position: absolute;
+    left: 0.15rem;
+    top: 0.6rem;
+    width: 5px;
+    height: 5px;
+    background: var(--color-term-green);
+    border-radius: 50%;
+    opacity: 0.6;
+  }
+
+  .cv-markdown code {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--color-term-cyan);
+    background: rgba(57, 210, 192, 0.08);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+
+  .cv-markdown pre {
+    background: var(--color-term-bg);
+    border: 1px solid var(--color-term-border);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+  }
+
+  .cv-markdown pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.68rem;
+    line-height: 1.6;
+    color: var(--color-term-fg);
+  }
+
+  .cv-markdown blockquote {
+    border-left: 3px solid var(--color-term-green);
+    padding: 0.4rem 0 0.4rem 0.75rem;
+    margin: 0.5rem 0;
+    background: rgba(63, 185, 80, 0.04);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .cv-markdown blockquote p {
+    margin: 0;
+    font-style: italic;
+  }
+
+  .cv-markdown a {
+    color: var(--color-term-blue);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .cv-markdown a:hover {
+    color: var(--color-term-green);
+    border-bottom-color: var(--color-term-green);
+  }
+
+  .cv-markdown table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+    font-size: 0.68rem;
+  }
+
+  .cv-markdown th,
+  .cv-markdown td {
+    border: 1px solid var(--color-term-border);
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+  }
+
+  .cv-markdown th {
+    background: var(--color-term-bg);
+    color: var(--color-term-fg);
+    font-weight: 600;
+  }
+
+  .cv-markdown td {
+    color: var(--color-term-fg-muted);
+  }
+
+  .cv-markdown img {
+    max-width: 100%;
+    border: 1px solid var(--color-term-border);
+    border-radius: 4px;
+    margin: 0.5rem 0;
+  }
+</style>

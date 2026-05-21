@@ -1,0 +1,51 @@
+---
+import { PROJECTS } from "../data/projects";
+import Icon from "./Icon.astro";
+import Section from "./Section.astro";
+import TermDivider from "./TermDivider.astro";
+---
+<TermDivider command="projects" />
+
+<Section id="projects" title="Featured Work" description="Open-source projects and tools I've built from the ground up.">
+  <div class="grid md:grid-cols-2 gap-4">
+    {PROJECTS.map((project) => (
+      <div class="terminal-window rounded-sm group">
+        <div class="px-4 py-2 border-b border-term-border text-xs text-term-fg-muted flex items-center justify-between" style="background: var(--color-term-bg-card);">
+          <span>
+            <span class="text-term-green">├──</span> <span class="text-term-cyan">{project.title.toLowerCase().replace(/\s+/g, "-")}</span>
+          </span>
+          <div class="flex gap-1.5">
+            {project.repoUrl && (
+              <a href={project.repoUrl} target="_blank" class="p-1 text-term-fg-muted hover:text-term-green transition-colors" aria-label="Source code">
+                <Icon name="github" size={14} />
+              </a>
+            )}
+            {project.liveUrl && (
+              <a href={project.liveUrl} target="_blank" class="p-1 text-term-fg-muted hover:text-term-green transition-colors" aria-label="Live demo">
+                <Icon name="external" size={14} />
+              </a>
+            )}
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="text-base font-bold text-term-fg mb-2 group-hover:text-term-green transition-colors" style="font-family: var(--font-mono);">
+            {project.title}
+          </h3>
+          <p class="text-xs text-term-fg-muted leading-relaxed mb-4">
+            {project.description}
+          </p>
+          <div class="text-[11px] text-term-fg-muted mb-2">
+            <span class="text-term-purple">$ </span>tech stack:
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            {project.tech.map((t) => (
+              <span class="px-2 py-0.5 text-[11px] border border-term-border text-term-fg-muted" style="background: var(--color-term-bg);">
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</Section>
