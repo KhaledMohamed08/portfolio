@@ -79,7 +79,7 @@ import Icon from "./Icon.astro";
                 class="text-term-fg-muted hover:text-term-green transition-colors text-xs flex items-center gap-1.5"
                 aria-label={link.ariaLabel}
               >
-                <Icon name={link.platform as "github" | "linkedin" | "email"} size={16} />
+                <Icon name={link.platform} size={16} />
                 {link.username}
               </a>
             ))}
