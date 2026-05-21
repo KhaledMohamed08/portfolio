@@ -1,46 +1,42 @@
-# Astro Starter Kit: Basics
+# khaled.dev — Portfolio
 
-```sh
-npm create astro@latest -- --template basics
+Terminal-themed portfolio site built with [Astro](https://astro.build) and Tailwind CSS.
+
+## Features
+
+- Terminal-inspired UI with matrix rain canvas, boot sequence, and command palette
+- Typewriter animations, keyboard navigation (`j`/`k`/`gg`/`G`), and scroll reveal
+- Dark/light theme toggle with system preference detection
+- Interactive contact terminal with form validation and async submission
+- Auto-generated sitemap, Open Graph tags, Twitter Cards, and JSON-LD structured data
+- Fully responsive
+
+## Project Structure
+
+```
+src/
+├── components/      # Astro components (Hero, Navbar, Projects, Contact, Icon, etc.)
+├── config/          # Central config with env variable fallbacks
+├── data/            # Typed data exports (social, skills, services, projects, site)
+├── layouts/         # Base layout with SEO meta, fonts, theme, command palette
+├── pages/           # Route pages (index.astro)
+└── styles/          # Global CSS
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Configuration
 
-## 🚀 Project Structure
+All site content is driven by `src/config/config.ts`. Social links, services, skills, and projects are defined there with environment variable overrides.
 
-Inside of your Astro project, you'll see the following folders and files:
+### Adding a Social Platform
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+1. Add an entry to `social` array in `src/config/config.ts`
+2. Add the matching SVG icon case in `src/components/Icon.astro`
+3. Add env variable overrides in `.env` if desired
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Commands
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+| Command | Action |
+|---|---|
+| `npm run dev` | Start dev server at `localhost:4321` |
+| `npm run build` | Build to `./dist/` |
+| `npm run preview` | Preview production build |
