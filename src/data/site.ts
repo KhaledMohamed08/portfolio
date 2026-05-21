@@ -7,4 +7,5 @@ export const SITE = {
   domain: CONFIG.domain,
   email: CONFIG.email,
   phone: CONFIG.phone,
+  jobTitle: CONFIG.title,
 } as const;

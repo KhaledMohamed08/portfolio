@@ -11,7 +11,7 @@ import TermDivider from "./TermDivider.astro";
       <div class="terminal-window rounded-sm group">
         <div class="px-4 py-2 border-b border-term-border text-xs text-term-green font-semibold flex items-center gap-2" style="background: var(--color-term-bg-card);">
           <span>{service.icon}</span>
-          <span class="text-term-fg group-hover:text-term-green transition-colors">{service.title}</span>
+          <h3 class="group-hover:text-term-green transition-colors">{service.title}</h3>
         </div>
         <div class="p-4">
           <p class="text-xs text-term-fg-muted leading-relaxed mb-4">
