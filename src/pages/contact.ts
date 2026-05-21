@@ -1,18 +1,30 @@
 import type { APIRoute } from "astro";
+import { env } from "cloudflare:workers";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, locals }) => {
-  const env = (locals as any).runtime?.env;
+export const POST: APIRoute = async ({ request }) => {
 
   try {
-    const text = await request.text();
-    const params = new URLSearchParams(text);
-    const name = params.get("name")?.trim();
-    const email = params.get("email")?.trim();
-    const phone = params.get("phone")?.trim();
-    const subject = params.get("subject")?.trim();
-    const message = params.get("message")?.trim();
+    const contentType = request.headers.get("content-type") || "";
+    let name = "", email = "", phone = "", subject = "", message = "";
+
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      name = body.name?.trim();
+      email = body.email?.trim();
+      phone = body.phone?.trim();
+      subject = body.subject?.trim();
+      message = body.message?.trim();
+    } else {
+      const text = await request.text();
+      const params = new URLSearchParams(text);
+      name = params.get("name")?.trim();
+      email = params.get("email")?.trim();
+      phone = params.get("phone")?.trim();
+      subject = params.get("subject")?.trim();
+      message = params.get("message")?.trim();
+    }
 
     if (!name || !email || !subject || !message) {
       return new Response(JSON.stringify({ error: "All fields are required" }), { status: 400 });
@@ -32,7 +44,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `Portfolio Contact <onboarding@resend.dev>`,
+        from: `Portfolio Contact <contact@khaledmohamed.com>`,
         to: [to],
         reply_to: [email],
         subject: `[Portfolio] ${subject}`,

@@ -294,19 +294,17 @@ import Section from "./Section.astro";
 
     addLine("$ Sending message...", "text-term-green");
 
-    const body = new URLSearchParams({
-      name: saved.name,
-      email: saved.email,
-      phone: saved.phone,
-      subject: saved.subject,
-      message: saved.message,
-    });
-
     try {
       const res = await fetch("/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: saved.name,
+          email: saved.email,
+          phone: saved.phone,
+          subject: saved.subject,
+          message: saved.message,
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
