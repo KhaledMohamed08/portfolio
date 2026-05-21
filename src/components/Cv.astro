@@ -11,21 +11,21 @@ const cvHtml = marked.parse(cvMarkdown);
 
 <Section id="cv" title="Curriculum Vitae" description="My professional background and experience.">
   <div class="max-w-3xl mx-auto">
-    <div class="flex items-center justify-end gap-2 mb-2 text-xs">
+    <div class="flex items-center justify-end gap-2 mb-2 text-xs flex-wrap">
       <button id="cv-toggle-cat" class="term-btn text-xs cv-toggle active" data-mode="cat">
         <span class="text-term-green">$</span> cat cv.md
       </button>
       <button id="cv-toggle-styled" class="term-btn text-xs cv-toggle" data-mode="styled">
         <span class="text-term-blue">◇</span> MD Formatted
       </button>
-      <span class="text-term-border">|</span>
+      <span class="text-term-border hidden sm:inline">|</span>
       <a
         href={CV.pdfPath}
         target="_blank"
         download
         class="term-btn-primary term-btn text-xs"
       >
-        <span class="text-term-green">↓</span> Download PDF Version
+        <span class="text-term-green">↓</span> <span class="hidden sm:inline">Download </span>PDF
       </a>
     </div>
 
