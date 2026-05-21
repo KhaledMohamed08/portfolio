@@ -1,0 +1,32 @@
+---
+
+---
+
+<button
+  id="go-top"
+  class="fixed bottom-6 right-6 z-50 term-btn text-xs opacity-0 invisible transition-all duration-300 pointer-events-none"
+  aria-label="Go to top"
+>
+  <span class="text-term-green">↑</span>
+  <span class="hidden sm:inline">cd ~</span>
+</button>
+
+<script>
+  const btn = document.getElementById("go-top");
+
+  if (btn) {
+    window.addEventListener("scroll", () => {
+      const show = window.scrollY > window.innerHeight * 0.5;
+      btn.classList.toggle("opacity-0", !show);
+      btn.classList.toggle("invisible", !show);
+      btn.classList.toggle("pointer-events-none", !show);
+      btn.classList.toggle("opacity-100", show);
+      btn.classList.toggle("visible", show);
+      btn.classList.toggle("pointer-events-auto", show);
+    });
+
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+</script>

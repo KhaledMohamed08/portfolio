@@ -1,0 +1,302 @@
+---
+import "../styles/global.css";
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = "Software Engineer Portfolio", description = "Full-stack software engineer building modern web experiences" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>{title}</title>
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem("theme");
+        const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+        if (stored === "light" || (!stored && prefersLight)) {
+          document.documentElement.classList.add("light");
+        }
+        if ("scrollRestoration" in history) {
+          history.scrollRestoration = "manual";
+        }
+        window.scrollTo(0, 0);
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen overflow-x-hidden">
+    <div class="scanline" aria-hidden="true"></div>
+
+    <div id="boot-screen" aria-hidden="true">
+      <pre style="font-size: 9px; line-height: 1.1;">
+ ██╗  ██╗██╗  ██╗ █████╗ ██╗     ███████╗██████╗
+ ██║ ██╔╝██║  ██║██╔══██╗██║     ██╔════╝██╔══██╗
+ █████╔╝ ███████║███████║██║     █████╗  ██║  ██║
+ ██╔═██╗ ██╔══██║██╔══██║██║     ██╔══╝  ██║  ██║
+ ██║  ██╗██║  ██║██║  ██║███████╗███████╗██████╔╝
+ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝
+      </pre>
+      <div id="boot-lines"></div>
+    </div>
+
+    <!-- Command Palette -->
+    <div id="cmd-palette" role="dialog" aria-label="Command palette">
+      <div id="cmd-palette-inner">
+        <input
+          id="cmd-palette-input"
+          type="text"
+          placeholder="Type a command…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div id="cmd-palette-results"></div>
+      </div>
+    </div>
+
+    <slot />
+
+    <script>
+      // ── Boot sequence ──────────────────────────────────────────────
+      const bootLines = [
+        "kernel: loading portfolio module...",
+        "kernel: initializing display matrix...",
+        "init: starting system services...",
+        "network: interface eth0 — link up",
+        "crypto: generating secure session keys...",
+        "storage: mounting /home — OK (128TB)",
+        "boot: system ready — entering interactive mode",
+      ];
+
+      const container = document.getElementById("boot-lines");
+      if (container) {
+        bootLines.forEach((line, i) => {
+          const div = document.createElement("div");
+          div.className = "boot-line";
+          div.style.animationDelay = `${0.5 + i * 0.25}s`;
+          div.textContent = `[  OK  ] ${line}`;
+          container.appendChild(div);
+        });
+      }
+
+      // ── Theme ─────────────────────────────────────────────────────────
+      const html = document.documentElement;
+      const toggle = document.getElementById("theme-toggle");
+
+      function setTheme(theme) {
+        html.classList.toggle("light", theme === "light");
+        localStorage.setItem("theme", theme);
+        requestAnimationFrame(() => {
+          const c = document.getElementById("matrix-canvas");
+          if (c) c.style.opacity = theme === "light" ? "0.06" : "0.12";
+        });
+      }
+
+      if (toggle) {
+        toggle.addEventListener("click", () => {
+          setTheme(html.classList.contains("light") ? "dark" : "light");
+        });
+      }
+
+      window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", (e) => {
+        if (!localStorage.getItem("theme")) setTheme(e.matches ? "light" : "dark");
+      });
+
+      {
+        const c = document.getElementById("matrix-canvas");
+        if (c) c.style.opacity = html.classList.contains("light") ? "0.06" : "0.12";
+      }
+
+      // ── Scroll reveal ─────────────────────────────────────────────────
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+      );
+      document.querySelectorAll(".reveal").forEach((el) => revealObserver.observe(el));
+
+      // ── Command palette ──────────────────────────────────────────────
+      const palette = document.getElementById("cmd-palette");
+      const paletteInput = document.getElementById("cmd-palette-input");
+      const paletteResults = document.getElementById("cmd-palette-results");
+
+      const commands = [
+        { id: "hero", icon: "🏠", label: "Go to Home", shortcut: "g g" },
+        { id: "services", icon: "◇", label: "Go to Services", shortcut: "g s" },
+        { id: "skills", icon: "{}", label: "Go to Skills", shortcut: "g k" },
+        { id: "cv", icon: "📄", label: "Go to CV", shortcut: "g c" },
+        { id: "contact", icon: "✉", label: "Go to Contact", shortcut: "g t" },
+        { id: "theme", icon: "☀", label: "Toggle Theme", shortcut: "g h" },
+        { id: "pdf", icon: "↓", label: "Download CV", shortcut: "g p" },
+      ];
+
+      let cmdSelected = -1;
+
+      function renderCommands(filter) {
+        const q = filter.toLowerCase();
+        const filtered = commands.filter(
+          (c) => c.label.toLowerCase().includes(q) || c.id.includes(q)
+        );
+        paletteResults.innerHTML = "";
+        cmdSelected = -1;
+        filtered.forEach((cmd, i) => {
+          const div = document.createElement("div");
+          div.className = "cmd-item";
+          div.innerHTML = `
+            <span class="cmd-icon">${cmd.icon}</span>
+            <span>${cmd.label}</span>
+            <span class="cmd-key">${cmd.shortcut}</span>
+          `;
+          div.addEventListener("click", () => executeCommand(cmd.id));
+          div.addEventListener("mouseenter", () => {
+            document.querySelectorAll(".cmd-item").forEach((e) => e.classList.remove("selected"));
+            div.classList.add("selected");
+            cmdSelected = i;
+          });
+          paletteResults.appendChild(div);
+        });
+        if (filtered.length > 0) {
+          paletteResults.firstChild.classList.add("selected");
+          cmdSelected = 0;
+        }
+      }
+
+      function executeCommand(id) {
+        closePalette();
+        if (id === "theme") {
+          setTheme(html.classList.contains("light") ? "dark" : "light");
+        } else if (id === "pdf") {
+          const link = document.querySelector('a[download]');
+          if (link) link.click();
+        } else {
+          const el = document.getElementById(id);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+
+      function openPalette() {
+        palette.classList.add("open");
+        paletteInput.value = "";
+        renderCommands("");
+        paletteInput.focus();
+      }
+
+      function closePalette() {
+        palette.classList.remove("open");
+        paletteInput.blur();
+      }
+
+      paletteInput.addEventListener("input", () => renderCommands(paletteInput.value));
+
+      paletteInput.addEventListener("keydown", (e) => {
+        const items = paletteResults.querySelectorAll(".cmd-item");
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          cmdSelected = Math.min(cmdSelected + 1, items.length - 1);
+          items.forEach((el, i) => el.classList.toggle("selected", i === cmdSelected));
+          items[cmdSelected]?.scrollIntoView({ block: "nearest" });
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          cmdSelected = Math.max(cmdSelected - 1, 0);
+          items.forEach((el, i) => el.classList.toggle("selected", i === cmdSelected));
+          items[cmdSelected]?.scrollIntoView({ block: "nearest" });
+        } else if (e.key === "Enter" && cmdSelected >= 0) {
+          e.preventDefault();
+          const idx = cmdSelected;
+          const all = commands.filter(
+            (c) => c.label.toLowerCase().includes(paletteInput.value.toLowerCase()) || c.id.includes(paletteInput.value)
+          );
+          if (all[idx]) executeCommand(all[idx].id);
+        } else if (e.key === "Escape") {
+          closePalette();
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+          e.preventDefault();
+          openPalette();
+          return;
+        }
+        if (palette.classList.contains("open")) return;
+
+        if (e.key === "Escape") closePalette();
+      });
+
+      palette.addEventListener("click", (e) => {
+        if (e.target === palette) closePalette();
+      });
+
+      // ── Keyboard navigation (j/k/gg/G) ──────────────────────────────
+      const secIds = ["hero", "services", "skills", "cv", "contact"];
+
+      function getSectionEls() {
+        return secIds.map((id) => document.getElementById(id)).filter(Boolean);
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (palette.classList.contains("open")) return;
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+
+        const all = getSectionEls();
+        const scrollY = window.scrollY + 70;
+
+        if (e.key === "j" || e.key === "ArrowDown") {
+          e.preventDefault();
+          let next = all.length - 1;
+          for (let i = 0; i < all.length - 1; i++) {
+            if (all[i].offsetTop <= scrollY) next = i + 1;
+          }
+          all[next]?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        if (e.key === "k" || e.key === "ArrowUp") {
+          e.preventDefault();
+          let prev = 0;
+          for (let i = 1; i < all.length; i++) {
+            if (all[i].offsetTop > scrollY) { prev = i - 1; break; }
+          }
+          all[prev]?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        if (e.key === "G" && e.shiftKey) {
+          e.preventDefault();
+          window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        }
+
+        if (e.key === "g" && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          document.getElementById("hero")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+
+      // ── Smooth hash scrolling with navbar offset ─────────────────────
+      document.addEventListener("click", (e) => {
+        const a = e.target.closest('a[href^="#"]');
+        if (!a || a.target === "_blank") return;
+        e.preventDefault();
+        const id = a.getAttribute("href").slice(1);
+        const el = document.getElementById(id);
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY - 70;
+          window.scrollTo({ top, behavior: "smooth" });
+        }
+      });
+    </script>
+  </body>
+</html>

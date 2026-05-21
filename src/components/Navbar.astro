@@ -1,0 +1,107 @@
+---
+import { NAV_LINKS } from "../data/navigation";
+import { SITE } from "../data/site";
+import Icon from "./Icon.astro";
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 border-b border-term-border" style="background: var(--color-term-bg-alt);">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-12">
+      <span class="text-sm text-term-fg-muted">
+        <a href="#hero" class="text-term-green">[{SITE.domain}]</a>
+        <span class="mx-1">~</span>
+        <span class="text-term-fg">$</span>
+      </span>
+
+      <div class="flex items-center gap-1">
+        <div class="hidden md:flex items-center">
+          {NAV_LINKS.map((link, i) => (
+            <>
+              <a
+                href={link.href}
+                class="px-3 py-1 text-xs text-term-fg-muted hover:text-term-green transition-colors nav-link"
+                data-section={link.href.slice(1)}
+              >
+                {link.label}
+              </a>
+              {i < NAV_LINKS.length - 1 && (
+                <span class="text-term-border text-xs">|</span>
+              )}
+            </>
+          ))}
+        </div>
+
+        <span class="text-term-border mx-2">|</span>
+
+        <button
+          id="theme-toggle"
+          class="p-1.5 text-term-fg-muted hover:text-term-green transition-colors cursor-pointer"
+          aria-label="Toggle theme"
+        >
+          <span class="theme-icon-dark">
+            <Icon name="sun" size={14} />
+          </span>
+          <span class="theme-icon-light">
+            <Icon name="moon" size={14} />
+          </span>
+        </button>
+
+        <div class="md:hidden ml-2">
+          <details class="group">
+            <summary class="list-none cursor-pointer p-1.5 text-term-fg-muted hover:text-term-green transition-colors">
+              <Icon name="menu" size={16} />
+            </summary>
+            <div class="absolute top-12 left-0 right-0 border-b border-term-border p-3 flex flex-col gap-1" style="background: var(--color-term-bg-alt);">
+              {NAV_LINKS.map((link) => (
+                <a
+                  href={link.href}
+                  class="px-3 py-1.5 text-xs font-mono text-term-fg-muted hover:text-term-green transition-colors nav-link"
+                  data-section={link.href.slice(1)}
+                >
+                  <span class="text-term-green">❯</span> {link.label}
+                </a>
+              ))}
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const links = document.querySelectorAll(".nav-link");
+
+  function updateActive() {
+    const sections = [...links].map((a) => document.getElementById(a.dataset.section)).filter(Boolean);
+    const scrollY = window.scrollY + 80;
+    let current = "#hero";
+
+    for (const section of sections) {
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      if (top <= scrollY) {
+        current = `#${section.id}`;
+      }
+    }
+
+    links.forEach((a) => {
+      a.style.color = a.getAttribute("href") === current ? "var(--color-term-green)" : "";
+    });
+  }
+
+  const scrollOpts = { passive: true };
+  let ticking = false;
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateActive();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, scrollOpts);
+
+  window.addEventListener("load", updateActive);
+  updateActive();
+</script>

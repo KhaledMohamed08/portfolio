@@ -1,7 +1,15 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Hero from "../components/Hero.astro";
+import GoToTop from "../components/GoToTop.astro";
+import Footer from "../components/Footer.astro";
+import { SITE } from "../data/site";
 ---
 
-<Layout>
-	
+<Layout title={SITE.title} description={SITE.description}>
+  <Navbar />
+  <div class="reveal"><Hero /></div>
+  <GoToTop />
+  <Footer />
 </Layout>

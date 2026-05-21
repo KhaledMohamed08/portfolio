@@ -1,0 +1,192 @@
+---
+import { SITE } from "../data/site";
+import { SOCIAL_LINKS } from "../data/social";
+import Icon from "./Icon.astro";
+---
+
+<section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden term-grid-bg">
+  <canvas id="matrix-canvas"></canvas>
+  <div class="relative z-10 w-full max-w-4xl mx-auto px-4">
+    <div class="terminal-window rounded-sm">
+      <div class="terminal-titlebar text-xs text-term-fg-muted flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="terminal-titlebar-dot red"></span>
+          <span class="terminal-titlebar-dot yellow"></span>
+          <span class="terminal-titlebar-dot green"></span>
+        </div>
+        <span class="text-[11px]">{SITE.name.toLowerCase()}@portfolio:~$</span>
+        <span class="w-14"></span>
+      </div>
+
+      <div class="p-6 sm:p-10">
+        <div class="text-xs text-term-fg-muted mb-4">
+          <span class="text-term-green">┌──(</span>
+          <span class="text-term-yellow">SYSTEM: ONLINE</span>
+          <span class="text-term-green">)</span>
+          <span class="text-term-blue"> -[{SITE.domain}]</span>
+        </div>
+
+        <div class="mb-2">
+          <span class="text-sm text-term-fg-muted">$ </span>
+          <span class="text-sm text-term-green">whoami</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight" style="font-family: var(--font-mono);">
+          <span class="text-term-fg">Hi, I'm</span>
+          <span class="text-term-green">&nbsp;</span>
+          <span class="text-term-green" id="typewriter-name" data-text={SITE.name}>{SITE.name}</span>
+          <br />
+          <span class="text-term-cyan" id="typewriter-title" data-text="Software Engineer">Software Engineer</span>
+        </h1>
+
+        <div class="mb-2 mt-6">
+          <span class="text-sm text-term-fg-muted">$ </span>
+          <span class="text-sm text-term-green">cat about.md</span>
+        </div>
+
+        <div class="border-l-2 border-term-green pl-4 mb-8" id="about-text" style="opacity: 0;">
+          <p class="text-sm text-term-fg-muted leading-relaxed">
+            I build performant, scalable full-stack applications with modern technologies.
+          </p>
+          <p class="text-sm text-term-fg-muted leading-relaxed">
+            Passionate about clean code, system design, and developer experience.
+          </p>
+        </div>
+
+        <div class="mb-2" id="action-prompt" style="opacity: 0;">
+          <span class="text-sm text-term-fg-muted">$ </span>
+          <span class="text-sm text-term-green">./run --action</span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-start gap-3 ml-4" id="action-buttons" style="opacity: 0;">
+          <a href="#projects" class="term-btn-primary term-btn text-xs glitch">
+            <span class="text-term-green">▶</span> View My Work
+          </a>
+          <a href="#contact" class="term-btn text-xs glitch">
+            <span class="text-term-blue">◇</span> Get In Touch
+          </a>
+        </div>
+
+        <div class="mt-10 pt-4 border-t border-term-border" id="social-section" style="opacity: 0;">
+          <div class="text-xs text-term-fg-muted mb-3">
+            <span class="text-term-green">└─</span> <span class="text-term-yellow">$SOCIAL</span>
+          </div>
+          <div class="flex items-center gap-4">
+            {SOCIAL_LINKS.map((link) => (
+              <a
+                href={link.url}
+                target={link.platform === "email" ? undefined : "_blank"}
+                class="text-term-fg-muted hover:text-term-green transition-colors text-xs flex items-center gap-1.5"
+                aria-label={link.ariaLabel}
+              >
+                <Icon name={link.platform as "github" | "linkedin" | "email"} size={16} />
+                {link.username}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <span class="text-xs text-term-fg-muted font-mono cursor-blink"></span>
+    </div>
+  </div>
+
+  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+    <span class="text-term-green/40 text-lg">▼</span>
+  </div>
+</section>
+
+<script>
+  const canvas = document.getElementById("matrix-canvas");
+  const ctx = canvas.getContext("2d");
+
+  function resizeCanvas() {
+    const hero = document.getElementById("hero");
+    canvas.width = hero.offsetWidth;
+    canvas.height = hero.offsetHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  const chars = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789<>/{}[]";
+  const fontSize = 10;
+  const columns = Math.floor(canvas.width / fontSize);
+  const drops = Array(columns).fill(1);
+
+  function drawMatrix() {
+    if (!canvas || !canvas.width) return;
+    ctx.fillStyle = "rgba(13, 17, 23, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(63, 185, 80, 0.35)";
+    ctx.font = `${fontSize}px monospace`;
+
+    for (let i = 0; i < drops.length; i++) {
+      const char = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+
+  let matrixInterval = setInterval(drawMatrix, 50);
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        if (!matrixInterval) matrixInterval = setInterval(drawMatrix, 50);
+      } else {
+        clearInterval(matrixInterval);
+        matrixInterval = null;
+      }
+    });
+  }, { threshold: 0.1 });
+  observer.observe(document.getElementById("hero"));
+
+  function typeText(el, text, speed, callback) {
+    let i = 0;
+    el.textContent = "";
+    el.classList.add("typewriter-cursor");
+    function type() {
+      if (i < text.length) {
+        el.textContent += text.charAt(i);
+        i++;
+        setTimeout(type, speed);
+      } else {
+        el.classList.remove("typewriter-cursor");
+        if (callback) callback();
+      }
+    }
+    type();
+  }
+
+  setTimeout(() => {
+    const nameEl = document.getElementById("typewriter-name");
+    const titleEl = document.getElementById("typewriter-title");
+    typeText(nameEl, nameEl.dataset.text, 60, () => {
+      setTimeout(() => {
+        typeText(titleEl, titleEl.dataset.text, 50, () => {
+          setTimeout(() => {
+            document.getElementById("about-text").style.transition = "opacity 0.6s ease";
+            document.getElementById("about-text").style.opacity = "1";
+            setTimeout(() => {
+              document.getElementById("action-prompt").style.transition = "opacity 0.6s ease";
+              document.getElementById("action-prompt").style.opacity = "1";
+              setTimeout(() => {
+                document.getElementById("action-buttons").style.transition = "opacity 0.6s ease";
+                document.getElementById("action-buttons").style.opacity = "1";
+                setTimeout(() => {
+                  document.getElementById("social-section").style.transition = "opacity 0.6s ease";
+                  document.getElementById("social-section").style.opacity = "1";
+                }, 200);
+              }, 200);
+            }, 200);
+          }, 300);
+        });
+      }, 400);
+    });
+  }, 500);
+</script>
